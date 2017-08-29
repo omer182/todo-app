@@ -1,5 +1,5 @@
 'use strict'
-
+const PG_CONNECTION_STRING = "postgres://vxuexuzwpnpvlc:38bd6effda432c4316e42e1dbb7ece42b6219f4ec916e42a330fa7e3c1d47877@ec2-54-247-64-64.eu-west-1.compute.amazonaws.com:5432/db0bmso7ob9spc";
 var express = require('express'),
     app = express(),
     path = require('path'),
@@ -10,13 +10,33 @@ var express = require('express'),
     userPassMap = {},
     userIdMap = {},
     itemList = [],
-    userIdCounter = 1;
+    userIdCounter = 1,
+    pg = require('pg');
+
+app.get('/db', function (request, response) {
+    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
+        client.query('SELECT * FROM test_table', function (err, result) {
+            done();
+            if (err) {
+                console.error(err);
+                response.send("Error " + err);
+            } else {
+                response.render('pages/db', {
+                    results: result.rows
+                });
+            }
+        });
+    });
+});
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
+
+
+
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
@@ -40,19 +60,35 @@ app.use("/styles/", express.static(__dirname + '/front/styles/'));
 app
     .route('/login/:user/:password')
     .post(function (req, res) {
-        var user = userPassMap[req.params.user];
-        if (user) {
-            if (user === req.params.password) {
-                res.status(200);
-                res.cookie('uid', Object.keys(userPassMap).indexOf(req.params.user) + 1, {
-                    maxAge: 60 * 60 * 1000
-                });
-                res.json({status: 'logged in successfuly'})
+
+    pg.connect(PG_CONNECTION_STRING, function (err, client, done) {
+        client.query(`SELECT * FROM Users WHERE Name='${req.params.user}' AND Password='${req.params.password}'`, function (err, result) {
+            if(err) {
                 return;
             }
-        }
-        res.status(500);
-        res.json({status: 'incorrect user or password'})
+            
+            console.log(results);
+
+            var user = userPassMap[req.params.user];
+            if (user) {
+                if (user === req.params.password) {
+                    res.status(200);
+                    res.cookie('uid', Object.keys(userPassMap).indexOf(req.params.user) + 1, {
+                        maxAge: 60 * 60 * 1000
+                    });
+                    res.json({
+                        status: 'logged in successfuly'
+                    })
+                    return;
+                }
+            }
+            res.status(500);
+            res.json({
+                status: 'incorrect user or password'
+            });
+
+        });
+    });
 
     });
 
@@ -63,7 +99,9 @@ app
         var isUserRegistered = userPassMap[user];
         if (isUserRegistered) {
             res.status(500);
-            res.json({status: 'user already registered, please choose a different username'})
+            res.json({
+                status: 'user already registered, please choose a different username'
+            })
         } else {
             res.status(200);
             userPassMap[user] = req.params.password;
@@ -81,23 +119,33 @@ app.use('/', function (req, res, next) {
         next();
     } else {
         res.status(400);
-        res.json({status: 'please login to renew your cookie license'});
+        res.json({
+            status: 'please login to renew your cookie license'
+        });
     }
 });
 
 app
     .route('/item')
     .post(function (req, res) {
-        itemList.push({id: uuid(), data: req.body, uid: req.cookies.uid});
+        itemList.push({
+            id: uuid(),
+            data: req.body,
+            uid: req.cookies.uid
+        });
         res.status(200);
-        res.json({status: 'item posted to list successfuly'});
+        res.json({
+            status: 'item posted to list successfuly'
+        });
     });
 
 app
     .route('/items')
     .get(function (req, res) {
         res.status(200);
-        res.send(itemList.filter(function(item) { return item.uid == req.cookies.uid}));
+        res.send(itemList.filter(function (item) {
+            return item.uid == req.cookies.uid
+        }));
     });
 
 app
@@ -178,3 +226,22 @@ function renewCookie(req, res) {
         maxAge: 60 * 60 * 1000
     });
 }
+
+
+
+// CREATE TABLE Users (
+//     ID SERIAL,
+//     Name varchar(255) NOT NULL,
+//     Password varchar(255) NOT NULL,
+//     PRIMARY KEY (ID)    
+// );
+
+// CREATE TABLE TODO (
+//     ID SERIAL,
+//     Todo varchar(255) NOT NULL,
+//     UID int NOT NULL,
+//     IsChecked BOOLEAN,
+//     PRIMARY KEY (ID)
+// );
+
+
