@@ -1,0 +1,192 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="styles/semantic.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <style>
+
+        body {
+            /* background: url(styles/bg.jpg); */
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+0,0+100;Neutral+Density */
+background: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+        }
+        .ui.middle {
+            width: 300px;
+        }
+
+        .row {
+            width: 313px;
+            margin: auto auto;
+            margin-top: 60px;
+        }
+
+        .content {
+            line-height: 39px !important;
+        }
+        .ui.icon.button.yellow {
+            float: left;
+        }
+
+        .ui.action.input {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.ui.icon.button.yellow {
+    height: 34px;
+}
+
+input.todo[type="text"] {
+    margin: 1px;
+    width: 170px;
+    height: 30px;
+}
+
+    button.ui.black.right.labeled.icon.button.addtodo {
+        margin-left: 10px;
+    }
+
+
+    .logout {
+        margin-top: 10px !important;
+    }
+
+    /*https://i2.wp.com/blog.stylingandroid.com/wp-content/uploads/2017/06/toggle_checked.png?ssl=1*/
+    </style>
+</head>
+
+<body>
+    <!--<div class="ui middle aligned center aligned grid">-->
+    <div class="row">
+        <h2 class="ui header">
+            <img src="styles/list.png">
+            <div class="content">
+                Todo App
+                <div class="sub header">By Omer Sher & Liron Zuarets</div>
+            </div>
+        </h2>
+        <div class="ui action input">
+            <input type="text" placeholder="What would you like to do?" name="todotxt" value="">
+            <button class="ui black right labeled icon button addtodo">
+    <i class="add icon"></i>
+    Add Todo
+  </button>
+        </div>
+        <div class="todoList">
+        </div>
+        <a class="ui red label logout">
+            Logout
+          </a>
+    </div>
+    <!--</div>-->
+</body>
+<script>
+    var port = 54321;
+    $(document).ready(function () {
+        $('.ui.submit.button').click(function () {
+            var username = $('input[name=username]').val()
+            var password = $('input[name=password]').val()
+
+            $.post('http://localhost:' + port + '/login/' + username + '/' + password, function (result) {
+                alert('hAHAHA succeeded');
+            }).fail(function () {
+                alert(':(');
+            });
+        });
+
+        $('.addtodo').click(function () {
+            var username = $('input[name=todotxt]').val()
+            addTodo(username);
+            $('input[name=todotxt]').val('');
+        });
+
+        getAndPopulateItems();
+
+
+
+    });
+
+    function addTodo(todo) {
+        if (!todo) return;
+        $.ajax({
+            type: "POST",
+            url: 'http://localhost:' + port + '/item',
+            data: JSON.stringify({ data: todo }),
+            success: function (data) {
+                document.location.reload();
+            },
+            dataType: 'json',
+            contentType: 'application/json'
+        });
+    }
+
+
+    function deleteTodoById(id, clbk) {
+        $.ajax({
+            type: "DELETE",
+            url: 'http://localhost:' + port + '/item/' + id,
+            success: function (data) {
+                if (typeof clbk === 'function') clbk();
+            }
+        });
+    }
+
+
+    function updateTodoById(id, todo, clbk) {
+        if (!todo) return;
+        $.ajax({
+            type: "PUT",
+            url: 'http://localhost:' + port + '/item/' + id,
+            data: JSON.stringify({ data: todo }),
+            success: function (data) {
+                if (typeof clbk === 'function') clbk();
+            },
+            dataType: 'json',
+            contentType: 'application/json'
+        });
+    }
+
+    function getAndPopulateItems() {
+        $.get('http://localhost:' + port + '/items', function (data) {
+
+            var template = '<div class="ui middle aligned divided list">';
+            data.reverse().forEach(function (item) {
+
+
+                template += '<div data-id="' + item.id + '" class="item">' +
+                                '<div class="right floated content">' +
+                                    '<div class="ui red button">Remove</div>' + 
+                                '</div>' + 
+                                '<img class="ui avatar image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png">' + 
+                                '<div class="content">' + 
+                                    item.data.data + 
+                                '</div>' + 
+                            '</div>';
+            });
+            template += '</div>';
+            $('.todoList').append(template);
+
+            $('.ui.button.red').click(function (elem) {
+                var id = $(this).parents('div.item').attr('data-id');
+                deleteTodoById(id, function () {
+                    document.location.reload();
+                });
+            });
+
+            $('.ui.button.yellow').click(function (elem) {
+                var id = $(this).parents('div.item').attr('data-id');
+                var todoTxt = $(this).parents('div.item').find('.content.txt input').val();
+                updateTodoById(id, todoTxt, function () {
+                    document.location.reload();
+                });
+            });
+        });
+    }
+
+</script>
+
+</html>

@@ -1,0 +1,73 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="styles/semantic.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+    <style>
+        body {
+            background: url(styles/bg.jpg);
+        }
+        .ui.middle {
+            width: 300px;
+        }
+
+        .row {
+            width: 313px;
+            margin: auto auto;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <!--<div class="ui middle aligned center alig ned grid">-->
+    <div class="row">
+        <h2 class="ui teal image header">
+            <div class="content">
+                Register a new account
+            </div>
+        </h2>
+        <form class="ui large form">
+            <div class="ui stacked segment">
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="user icon"></i>
+                        <input type="text" name="username" placeholder="Username">
+                    </div>
+                </div>
+                <div class="field">
+                    <div class="ui left icon input">
+                        <i class="lock icon"></i>
+                        <input type="password" name="password" placeholder="Password">
+                    </div>
+                </div>
+                <div class="ui fluid large teal submit button">Register</div>
+            </div>
+
+            <div class="ui error message"></div>
+
+        </form>
+
+    </div>
+    <!--</div>-->
+</body>
+<script>
+    $(document).ready(function () {
+        var port = 54321;
+        $('.ui.submit.button').click(function () {
+            var username = $('input[name=username]').val()
+            var password = $('input[name=password]').val()
+
+            $.post('http://localhost:' + port + '/register/' + username + '/' + password, function (result) {
+                document.location = '/';
+            }).fail(function () {
+                alert('Failed');
+            });
+        });
+
+    });
+
+</script>
+
+</html>
