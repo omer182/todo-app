@@ -41,11 +41,13 @@ app.use(cookieParser());
 
 //assuming app is express Object.
 app.get('/', function (req, res) {
-    if (userIdMap[req.cookies.uid]) {
-        res.sendFile(__dirname + '/front/index.html');
-    } else {
-        res.sendFile(__dirname + '/front/login.html');
-    }
+    client.query(`SELECT * FROM Users WHERE ID='${req.cookies.uid}`, function (err, result) {
+        if (result.rows.length === 1) {
+            res.sendFile(__dirname + '/front/index.html');
+        } else {
+            res.sendFile(__dirname + '/front/login.html');
+        }
+    })
 });
 
 app.get('/register', function (req, res) {
@@ -127,13 +129,13 @@ app
             }
         })
 
-// CREATE TABLE TODO (
-//     ID SERIAL,
-//     Todo varchar(255) NOT NULL,
-//     UID int NOT NULL,
-//     IsChecked BOOLEAN,
-//     PRIMARY KEY (ID)
-// );
+        // CREATE TABLE TODO (
+        //     ID SERIAL,
+        //     Todo varchar(255) NOT NULL,
+        //     UID int NOT NULL,
+        //     IsChecked BOOLEAN,
+        //     PRIMARY KEY (ID)
+        // );
 
         itemList.push({
             id: uuid(),
