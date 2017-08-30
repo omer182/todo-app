@@ -155,7 +155,7 @@ app
 
 app
     .route('/logout').get(function (req, res) {
-        cookie = req.cookies;
+        var cookie = req.cookies;
         for (var prop in cookie) {
             if (!cookie.hasOwnProperty(prop)) {
                 continue;
