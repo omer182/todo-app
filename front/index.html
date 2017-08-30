@@ -185,8 +185,7 @@ input.todo[type="text"] {
 
 
             $('.logout').click(function (elem) {
-               document.cookie = "";
-               document.location.reload();
+                document.location = 'http://localhost:' + port + '/logout';
             });
         });
     }
