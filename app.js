@@ -153,6 +153,20 @@ app
         res.json({});
     });
 
+app
+    .route('/logout').get(function (req, res) {
+        cookie = req.cookies;
+        for (var prop in cookie) {
+            if (!cookie.hasOwnProperty(prop)) {
+                continue;
+            }
+            res.cookie(prop, '', {
+                expires: new Date(0)
+            });
+        }
+        res.redirect('/');
+    });
+
 //PORT SETUP
 var port = normalizePort(process.env.PORT || '54321');
 
