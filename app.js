@@ -47,8 +47,7 @@ app.get('/', function (req, res) {
                 res.sendFile(__dirname + '/front/index.html');
                 renewCookie(req, res); // wrap with promise
                 //next();
-            }
-             else {
+            } else {
                 res.sendFile(__dirname + '/front/login.html');
             }
         })
@@ -109,48 +108,24 @@ app
 app
     .route('/item')
     .post(function (req, res) {
-
-        client.query(`INSERT INTO Users (Todo, UID, isChecked) VALUES ('${req.params.user}', t'${req.params.user}', '${req.params.password}')`, function (err, result) {
-            if (result.rows.length === 1) {
-                res.status(500);
-                res.json({
-                    status: 'user already registered, please choose a different username'
-                });
-            } else {
-                client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`);
-                res.status(200);
-                res.json({
-                    status: 'registered successfuly'
-                })
-            }
-        })
-
-        // CREATE TABLE TODO (
-        //     ID SERIAL,
-        //     Todo varchar(255) NOT NULL,
-        //     UID int NOT NULL,
-        //     IsChecked BOOLEAN,
-        //     PRIMARY KEY (ID)
-        // );
-
-        itemList.push({
-            id: uuid(),
-            data: req.body,
-            uid: req.cookies.uid
-        });
+        client.query(`INSERT INTO TODO (Todo, UID, isChecked) VALUES ('${req.body.data}', '${req.cookies.uid}', FALSE)`);
         res.status(200);
-        res.json({
-            status: 'item posted to list successfuly'
-        });
+        res.json();
     });
 
 app
     .route('/items')
     .get(function (req, res) {
         res.status(200);
-        res.send(itemList.filter(function (item) {
-            return item.uid == req.cookies.uid
-        }));
+        client.query(`SELECT * FROM TODO WHERE UID=${req.cookies.uid}`, (err, result) => {
+            res.json(result.rows.map((item) => {
+                return {
+                    id: item.id,
+                    data: item.todo,
+                    isChecked: item.isChecked
+                }
+            }));
+        })
     });
 
 app
