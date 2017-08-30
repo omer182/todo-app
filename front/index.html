@@ -6,13 +6,9 @@
         crossorigin="anonymous"></script>
     <style>
 
-        body {
-            /* background: url(styles/bg.jpg); */
-            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#000000+0,000000+100&0.65+0,0+100;Neutral+Density */
-background: -moz-linear-gradient(top, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%); /* FF3.6-15 */
-background: -webkit-linear-gradient(top, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* Chrome10-25,Safari5.1-6 */
-background: linear-gradient(to bottom, rgba(0,0,0,0.65) 0%,rgba(0,0,0,0) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
-filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a6000000', endColorstr='#00000000',GradientType=0 ); /* IE6-9 */
+
+body {
+            background: url(styles/bg.jpg);
         }
         .ui.middle {
             width: 300px;
@@ -61,6 +57,7 @@ input.todo[type="text"] {
 
 <body>
     <!--<div class="ui middle aligned center aligned grid">-->
+    <div class="ui stacked segment" style="width: 450px; margin: auto; margin-top: 20px;">
     <div class="row">
         <h2 class="ui header">
             <img src="styles/list.png">
@@ -81,6 +78,7 @@ input.todo[type="text"] {
         <a class="ui red label logout">
             Logout
           </a>
+    </div>
     </div>
     <!--</div>-->
 </body>
@@ -117,7 +115,7 @@ input.todo[type="text"] {
             url: 'http://localhost:' + port + '/item',
             data: JSON.stringify({ data: todo }),
             success: function (data) {
-                document.location.reload();
+                setTimeout(() => document.location.reload(), 1000);
             },
             dataType: 'json',
             contentType: 'application/json'
