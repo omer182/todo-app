@@ -110,7 +110,7 @@ app
     .post(function (req, res) {
         client.query(`INSERT INTO TODO (Todo, UID, isChecked) VALUES ('${req.body.data}', '${req.cookies.uid}', FALSE)`);
         res.status(200);
-        res.json();
+        res.json({ status: 'ok' });
     });
 
 app

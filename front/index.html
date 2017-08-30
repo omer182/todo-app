@@ -182,6 +182,12 @@ input.todo[type="text"] {
                     document.location.reload();
                 });
             });
+
+
+            $('.logout').click(function (elem) {
+               document.cookie = "";
+               document.location.reload();
+            });
         });
     }
 
