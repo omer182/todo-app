@@ -96,11 +96,11 @@ app
         client.query(`SELECT * FROM Users WHERE Name='${req.params.user}' AND Password='${req.params.password}'`, function (err, result) {
             if (result.rows.length === 1) {
                 res.status(500);
-                res.json();
+                res.json({});
             } else {
                 client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`);
                 res.status(200);
-                res.json();
+                res.json({});
             }
         })
     });
@@ -110,7 +110,7 @@ app
     .post(function (req, res) {
         client.query(`INSERT INTO TODO (Todo, UID, isChecked) VALUES ('${req.body.data}', '${req.cookies.uid}', FALSE)`);
         res.status(200);
-        res.json({ status: 'ok' });
+        res.json({});
     });
 
 app
@@ -148,36 +148,22 @@ app
 app
     .route('/item/:id')
     .delete(function (req, res) {
-        var item = itemList.splice(itemList.findIndex(x => x.id === req.params.id), 1)[0];
-        if (item) {
-            res.status(200);
-            res.json({
-                status: 'item with id ' + req.params.id + ' deleted'
-            });
-        } else {
-            res.status(404);
-            res.json({
-                status: 'item with id ' + req.params.id + ' not found'
-            });
-        }
-    });
+        client.query(`DELETE FROM TODO WHERE ID=${req.params.id}`);
+        res.status(200);
+        res.json({});
 
-app
-    .route('/item/:id')
-    .put(function (req, res) {
-        var index = itemList.findIndex(x => x.id === req.params.id);
-        if (index != -1) {
-            itemList[index].data.data = req.body.data;
-            res.status(200);
-            res.json({
-                status: 'item with id ' + req.params.id + ' updated'
-            });
-        } else {
-            res.status(404);
-            res.json({
-                status: 'item with id ' + req.params.id + ' not found'
-            });
-        }
+        // var item = itemList.splice(itemList.findIndex(x => x.id === req.params.id), 1)[0];
+        // if (item) {
+        //     res.status(200);
+        //     res.json({
+        //         status: 'item with id ' + req.params.id + ' deleted'
+        //     });
+        // } else {
+        //     res.status(404);
+        //     res.json({
+        //         status: 'item with id ' + req.params.id + ' not found'
+        //     });
+
     });
 
 //PORT SETUP
