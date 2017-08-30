@@ -41,13 +41,21 @@ app.use(cookieParser());
 
 //assuming app is express Object.
 app.get('/', function (req, res) {
-    client.query(`SELECT * FROM Users WHERE ID='${req.cookies.uid}`, function (err, result) {
-        if (result.rows.length === 1) {
-            res.sendFile(__dirname + '/front/index.html');
-        } else {
-            res.sendFile(__dirname + '/front/login.html');
-        }
-    })
+    if (req.cookies && req.cookies.uid) {
+        client.query(`SELECT * FROM Users WHERE ID=${req.cookies.uid}`, function (err, result) {
+            if (result.rows.length === 1) {
+                res.sendFile(__dirname + '/front/index.html');
+                renewCookie(req, res); // wrap with promise
+                //next();
+            }
+             else {
+                res.sendFile(__dirname + '/front/login.html');
+            }
+        })
+    } else {
+        res.sendFile(__dirname + '/front/login.html');
+    }
+
 });
 
 app.get('/register', function (req, res) {
@@ -97,18 +105,6 @@ app
             }
         })
     });
-
-app.use('/', function (req, res, next) {
-    if (userIdMap[req.cookies.uid]) {
-        renewCookie(req, res); // wrap with promise
-        next();
-    } else {
-        res.status(400);
-        res.json({
-            status: 'please login to renew your cookie license'
-        });
-    }
-});
 
 app
     .route('/item')
