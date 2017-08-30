@@ -151,19 +151,6 @@ app
         client.query(`DELETE FROM TODO WHERE ID=${req.params.id}`);
         res.status(200);
         res.json({});
-
-        // var item = itemList.splice(itemList.findIndex(x => x.id === req.params.id), 1)[0];
-        // if (item) {
-        //     res.status(200);
-        //     res.json({
-        //         status: 'item with id ' + req.params.id + ' deleted'
-        //     });
-        // } else {
-        //     res.status(404);
-        //     res.json({
-        //         status: 'item with id ' + req.params.id + ' not found'
-        //     });
-
     });
 
 //PORT SETUP
