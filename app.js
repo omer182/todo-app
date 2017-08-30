@@ -10,33 +10,30 @@ var express = require('express'),
     userPassMap = {},
     userIdMap = {},
     itemList = [],
-    userIdCounter = 1,
-    pg = require('pg');
+    userIdCounter = 1;
+const {
+    Client
+} = require('pg')
 
-app.get('/db', function (request, response) {
-    pg.connect(process.env.DATABASE_URL, function (err, client, done) {
-        client.query('SELECT * FROM test_table', function (err, result) {
-            done();
-            if (err) {
-                console.error(err);
-                response.send("Error " + err);
-            } else {
-                response.render('pages/db', {
-                    results: result.rows
-                });
-            }
-        });
-    });
-});
+const client = new Client({
+    connectionString: PG_CONNECTION_STRING,
+    ssl: true
+})
+
+client.connect((err) => {
+    if (err) {
+        console.error('connection error', err.stack)
+    } else {
+        console.log('connected to DB')
+    }
+})
+
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 });
-
-
-
 
 app.use('/public', express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
@@ -60,57 +57,43 @@ app.use("/styles/", express.static(__dirname + '/front/styles/'));
 app
     .route('/login/:user/:password')
     .post(function (req, res) {
-
-    pg.connect(PG_CONNECTION_STRING, function (err, client, done) {
         client.query(`SELECT * FROM Users WHERE Name='${req.params.user}' AND Password='${req.params.password}'`, function (err, result) {
-            if(err) {
-                return;
+            if (err) {
+                res.status(500);
+                res.json({
+                    status: err
+                })
             }
-            
-            console.log(results);
-
-            var user = userPassMap[req.params.user];
-            if (user) {
-                if (user === req.params.password) {
-                    res.status(200);
-                    res.cookie('uid', Object.keys(userPassMap).indexOf(req.params.user) + 1, {
-                        maxAge: 60 * 60 * 1000
-                    });
-                    res.json({
-                        status: 'logged in successfuly'
-                    })
-                    return;
-                }
+            if (result.rows.length === 1) {
+                res.status(200);
+                res.cookie('uid', result.rows[0].id, {
+                    maxAge: 60 * 60 * 1000
+                });
+                res.json({
+                    status: 'logged in successfuly'
+                })
+            } else {
+                res.status(500);
+                res.json({
+                    status: 'incorrect user or password'
+                });
             }
-            res.status(500);
-            res.json({
-                status: 'incorrect user or password'
-            });
-
         });
-    });
-
     });
 
 app
     .route('/register/:user/:password')
     .post(function (req, res) {
-        var user = req.params.user;
-        var isUserRegistered = userPassMap[user];
-        if (isUserRegistered) {
-            res.status(500);
-            res.json({
-                status: 'user already registered, please choose a different username'
-            })
-        } else {
-            res.status(200);
-            userPassMap[user] = req.params.password;
-            userIdMap[userIdCounter] = user;
-            userIdCounter++;
-            res.json({
-                status: 'registered successfuly with username: ' + user
-            })
-        }
+        client.query(`SELECT * FROM Users WHERE Name='${req.params.user}' AND Password='${req.params.password}'`, function (err, result) {
+            if (result.rows.length === 1) {
+                res.status(500);
+                res.json();
+            } else {
+                client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`);
+                res.status(200);
+                res.json();
+            }
+        })
     });
 
 app.use('/', function (req, res, next) {
@@ -128,6 +111,30 @@ app.use('/', function (req, res, next) {
 app
     .route('/item')
     .post(function (req, res) {
+
+        client.query(`INSERT INTO Users (Todo, UID, isChecked) VALUES ('${req.params.user}', t'${req.params.user}', '${req.params.password}')`, function (err, result) {
+            if (result.rows.length === 1) {
+                res.status(500);
+                res.json({
+                    status: 'user already registered, please choose a different username'
+                });
+            } else {
+                client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`);
+                res.status(200);
+                res.json({
+                    status: 'registered successfuly'
+                })
+            }
+        })
+
+// CREATE TABLE TODO (
+//     ID SERIAL,
+//     Todo varchar(255) NOT NULL,
+//     UID int NOT NULL,
+//     IsChecked BOOLEAN,
+//     PRIMARY KEY (ID)
+// );
+
         itemList.push({
             id: uuid(),
             data: req.body,
@@ -243,5 +250,3 @@ function renewCookie(req, res) {
 //     IsChecked BOOLEAN,
 //     PRIMARY KEY (ID)
 // );
-
-
