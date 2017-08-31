@@ -63,7 +63,7 @@
             $.post('//' + domain + '/register/' + username + '/' + password, function (result) {
                 document.location = '/';
             }).fail(function () {
-                alert('Failed');
+                alert('User already exists');
             });
         });
 
