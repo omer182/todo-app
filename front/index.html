@@ -36,11 +36,13 @@ body {
     height: 34px;
 }
 
-input.todo[type="text"] {
-    margin: 1px;
-    width: 170px;
-    height: 30px;
+input[type="text"] {
+    /* margin: 1px; */
+    width: 183px !important;
+    /* height: 30px; */
 }
+
+
 
     button.ui.black.right.labeled.icon.button.addtodo {
         margin-left: 10px;
@@ -67,10 +69,10 @@ input.todo[type="text"] {
             </div>
         </h2>
         <div class="ui action input">
-            <input type="text" placeholder="What would you like to do?" name="todotxt" value="">
-            <button class="ui black right labeled icon button addtodo">
+            <input type="text" placeholder="What do u wanna do?" name="todotxt" value="">
+            <button class="ui black right teal labeled icon button addtodo">
     <i class="add icon"></i>
-    Add Todo
+    Add
   </button>
         </div>
         <div class="todoList">
@@ -102,6 +104,29 @@ input.todo[type="text"] {
             $('input[name=todotxt]').val('');
         });
 
+        $('body').on('click', '.ui.avatar.image', (elem) => {
+            if($(elem.target).attr('isloading') == 'true') return;
+
+            let itemId = $(elem.target).parent().attr('data-id');
+            let isChecked = ($(elem.target).parent().attr('ischeckd') == "true") ? true : false;
+            
+            $(elem.target).attr('ischecked',''+!isChecked);
+            $(elem.target).attr('isloading','true');
+            $(elem.target).attr('src', 'http://preloaders.evidweb.com/images/preloaders/ajax-loading-c7.gif')
+            $.ajax({
+                    type: "GET",
+                    url: 'http://localhost:' + port + '/item/' + itemId + '/check',
+                    success: function (data) {
+                        $(elem.target).attr('isloading', 'false');
+                        var imageToRender = (!data.isChecked) ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png' : 'https://cdn1.iconfinder.com/data/icons/web-interface-part-2/32/circle-checkmark-512.png';
+                        $(elem.target).attr('src', imageToRender);
+                    },
+                    dataType: 'json',
+                    contentType: 'application/json'
+                });
+            
+        });
+        
         getAndPopulateItems();
 
 
@@ -154,12 +179,12 @@ input.todo[type="text"] {
             var template = '<div class="ui middle aligned divided list">';
             data.reverse().forEach(function (item) {
 
-
-                template += '<div data-id="' + item.id + '" class="item">' +
+                var imageToRender = (item.isChecked) ? 'https://cdn1.iconfinder.com/data/icons/web-interface-part-2/32/circle-checkmark-512.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png';
+                template += '<div data-id="' + item.id + '" ischecked="' + item.isChecked + '" class="item">' +
                                 '<div class="right floated content">' +
                                     '<div class="ui red button">Remove</div>' + 
                                 '</div>' + 
-                                '<img class="ui avatar image" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png">' + 
+                                '<img class="ui avatar image" src="'+ imageToRender +'">' + 
                                 '<div class="content">' + 
                                     item.data + 
                                 '</div>' + 
