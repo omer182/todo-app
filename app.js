@@ -96,16 +96,16 @@ app
         client.query(`SELECT COUNT(1) FROM Users WHERE Name='${req.params.user}'`, (err, result) => {
             if(result.rows[0]['count'] > 0) {
                 res.status(500);
-                res.json(result);
+                res.json({ result, err });
                 return;
             }
             client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`, (err, result) => {
                 if (err) {
                     res.status(500);
-                    res.json(result);
+                    res.json({ result, err });
                 } else {
                     res.status(200);
-                    res.json(result);
+                    res.json({ result, err });
                 }
             });
         });
