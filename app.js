@@ -114,6 +114,18 @@ app
     });
 
 app
+    .route('/item/:id/check')
+    .get(function (req, res) {
+        client.query(`SELECT * FROM TODO WHERE ID=${req.params.id}`, (err, result) => {
+            client.query(`UPDATE TODO SET isChecked = '${!result.rows[0]['ischecked']}' WHERE ID = ${result.rows[0].id};`);
+            res.status(200);
+            res.json({
+                isChecked: !result.rows[0]['ischecked']
+            });
+        })
+    });
+
+app
     .route('/items')
     .get(function (req, res) {
         res.status(200);
@@ -122,27 +134,10 @@ app
                 return {
                     id: item.id,
                     data: item.todo,
-                    isChecked: item.isChecked
+                    isChecked: item.ischecked
                 }
             }));
         })
-    });
-
-app
-    .route('/items/:id')
-    .get(function (req, res) {
-        var item = itemlist.filter(function (v) {
-            return vid === req.params.id
-        })[0];
-        if (item) {
-            res.status(200);
-            res.send(item);
-        } else {
-            res.status(404);
-            res.json({
-                status: 'item with id ' + req.params.id + 'not found'
-            });
-        }
     });
 
 app
