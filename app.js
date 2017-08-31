@@ -96,10 +96,10 @@ app
         client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`, (err, result) => {
             if (err) {
                 res.status(500);
-                res.json({});
+                res.json(result);
             } else {
                 res.status(200);
-                res.json({});
+                res.json(result);
             }
         });
     });
