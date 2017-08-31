@@ -93,15 +93,23 @@ app
 app
     .route('/register/:user/:password')
     .post(function (req, res) {
-        client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`, (err, result) => {
-            if (err) {
+        client.query(`SELECT COUNT(1) FROM Users WHERE Name='${req.params.user}'`, (err, result) => {
+            if(result.rows.length > 0) {
                 res.status(500);
                 res.json(result);
-            } else {
-                res.status(200);
-                res.json(result);
+                return;
             }
+            client.query(`INSERT INTO Users (Name, Password) VALUES ('${req.params.user}', '${req.params.password}')`, (err, result) => {
+                if (err) {
+                    res.status(500);
+                    res.json(result);
+                } else {
+                    res.status(200);
+                    res.json(result);
+                }
+            });
         });
+
     });
 
 app
