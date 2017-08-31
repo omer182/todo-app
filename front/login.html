@@ -64,7 +64,7 @@
             var username = $('input[name=username]').val()
             var password = $('input[name=password]').val()
 
-            $.post('http://localhost:' + port + '/login/' + username + '/' + password, function (result) {
+            $.post('//localhost:' + port + '/login/' + username + '/' + password, function (result) {
                 document.location.reload();
             }).fail(function () {
                 alert('Failed');
@@ -82,13 +82,13 @@
     });
 
     function addTodo(todo) {
-        $.post('http://localhost:' + port + '/item', JSON.stringify(todo), function (data) {
+        $.post('//localhost:' + port + '/item', JSON.stringify(todo), function (data) {
             document.location.reload();
         });
     }
 
     function getAndPopulateItems() {
-        $.get('http://localhost:'+ port + '/items', function (data) {
+        $.get('//localhost:'+ port + '/items', function (data) {
 
             var template = '<div class="ui styled accordion">';
             data.forEach(function (item) {
