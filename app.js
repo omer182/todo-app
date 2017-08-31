@@ -94,7 +94,7 @@ app
     .route('/register/:user/:password')
     .post(function (req, res) {
         client.query(`SELECT * FROM Users WHERE Name='${req.params.user}' AND Password='${req.params.password}'`, function (err, result) {
-            if (result.rows && result.rows[0]['user']) {
+            if (result.rows && result.rows[0]['name']) {
                 res.status(500);
                 res.json({});
             } else {
@@ -163,7 +163,7 @@ app
     });
 
 //PORT SETUP
-var port = normalizePort(process.env.PORT || '54321');
+var port = normalizePort(process.env.PORT || '12345');
 
 app.listen(port, function () {
     console.log('app started, listening on port: ' + port);
