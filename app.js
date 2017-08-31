@@ -163,7 +163,7 @@ app
     });
 
 //PORT SETUP
-var port = normalizePort(process.env.PORT || '54321');
+var port = normalizePort(process.env.PORT || '80');
 
 app.listen(port, function () {
     console.log('app started, listening on port: ' + port);
