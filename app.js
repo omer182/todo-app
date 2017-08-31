@@ -94,7 +94,7 @@ app
     .route('/register/:user/:password')
     .post(function (req, res) {
         client.query(`SELECT COUNT(1) FROM Users WHERE Name='${req.params.user}'`, (err, result) => {
-            if(result.rows.length > 0) {
+            if(result.rows[0]['count'] > 0) {
                 res.status(500);
                 res.json(result);
                 return;
