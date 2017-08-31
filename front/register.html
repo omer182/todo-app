@@ -55,11 +55,12 @@
 <script>
     $(document).ready(function () {
         var port = 54321;
+        var domain = document.location.host;
         $('.ui.submit.button').click(function () {
             var username = $('input[name=username]').val()
             var password = $('input[name=password]').val()
 
-            $.post('http://localhost:' + port + '/register/' + username + '/' + password, function (result) {
+            $.post('//' + domain + '/register/' + username + '/' + password, function (result) {
                 document.location = '/';
             }).fail(function () {
                 alert('Failed');
