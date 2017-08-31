@@ -59,12 +59,13 @@
 </body>
 <script>
         var port = 54321;
+        var domain = document.location.host;
     $(document).ready(function () {
         $('.ui.submit.button').click(function () {
             var username = $('input[name=username]').val()
             var password = $('input[name=password]').val()
 
-            $.post('//localhost:' + port + '/login/' + username + '/' + password, function (result) {
+            $.post('//' + domain + '/login/' + username + '/' + password, function (result) {
                 document.location.reload();
             }).fail(function () {
                 alert('Failed');
@@ -82,13 +83,13 @@
     });
 
     function addTodo(todo) {
-        $.post('//localhost:' + port + '/item', JSON.stringify(todo), function (data) {
+        $.post('//' + domain + '/item', JSON.stringify(todo), function (data) {
             document.location.reload();
         });
     }
 
     function getAndPopulateItems() {
-        $.get('//localhost:'+ port + '/items', function (data) {
+        $.get('//' + domain + '/items', function (data) {
 
             var template = '<div class="ui styled accordion">';
             data.forEach(function (item) {

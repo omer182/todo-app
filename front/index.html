@@ -86,12 +86,13 @@ input[type="text"] {
 </body>
 <script>
     var port = 54321;
+    var domain = document.location.host;
     $(document).ready(function () {
         $('.ui.submit.button').click(function () {
             var username = $('input[name=username]').val()
             var password = $('input[name=password]').val()
 
-            $.post('//localhost:' + port + '/login/' + username + '/' + password, function (result) {
+            $.post('//' + domain + '/login/' + username + '/' + password, function (result) {
                 alert('hAHAHA succeeded');
             }).fail(function () {
                 alert(':(');
@@ -115,7 +116,7 @@ input[type="text"] {
             $(elem.target).attr('src', 'styles/resources/ajax-loading-c7.gif')
             $.ajax({
                     type: "GET",
-                    url: '//localhost:' + port + '/item/' + itemId + '/check',
+                    url: '//' + domain + '/item/' + itemId + '/check',
                     success: function (data) {
                         $(elem.target).attr('isloading', 'false');
                         var imageToRender = (!data.isChecked) ? 'styles/resources/Small-dark-grey-circle.svg.png' : 'styles/resources/circle-checkmark-512.png';
@@ -137,7 +138,7 @@ input[type="text"] {
         if (!todo) return;
         $.ajax({
             type: "POST",
-            url: '//localhost:' + port + '/item',
+            url: '//' + domain + '/item',
             data: JSON.stringify({ data: todo }),
             success: function (data) {
                 setTimeout(() => document.location.reload(), 1000);
@@ -151,7 +152,7 @@ input[type="text"] {
     function deleteTodoById(id, clbk) {
         $.ajax({
             type: "DELETE",
-            url: '//localhost:' + port + '/item/' + id,
+            url: '//' + domain + '/item/' + id,
             success: function (data) {
                 if (typeof clbk === 'function') clbk();
             }
@@ -163,7 +164,7 @@ input[type="text"] {
         if (!todo) return;
         $.ajax({
             type: "PUT",
-            url: '//localhost:' + port + '/item/' + id,
+            url: '//' + domain + '/item/' + id,
             data: JSON.stringify({ data: todo }),
             success: function (data) {
                 if (typeof clbk === 'function') clbk();
@@ -174,7 +175,7 @@ input[type="text"] {
     }
 
     function getAndPopulateItems() {
-        $.get('//localhost:' + port + '/items', function (data) {
+        $.get('//' + domain + '/items', function (data) {
 
             var template = '<div class="ui middle aligned divided list">';
             data.reverse().forEach(function (item) {
@@ -210,7 +211,7 @@ input[type="text"] {
 
 
             $('.logout').click(function (elem) {
-                document.location = '//localhost:' + port + '/logout';
+                document.location = '//' + domain + '/logout';
             });
         });
     }
