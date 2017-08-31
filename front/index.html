@@ -112,13 +112,13 @@ input[type="text"] {
             
             $(elem.target).attr('ischecked',''+!isChecked);
             $(elem.target).attr('isloading','true');
-            $(elem.target).attr('src', 'http://preloaders.evidweb.com/images/preloaders/ajax-loading-c7.gif')
+            $(elem.target).attr('src', 'styles/resources/ajax-loading-c7.gif')
             $.ajax({
                     type: "GET",
                     url: 'http://localhost:' + port + '/item/' + itemId + '/check',
                     success: function (data) {
                         $(elem.target).attr('isloading', 'false');
-                        var imageToRender = (!data.isChecked) ? 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png' : 'https://cdn1.iconfinder.com/data/icons/web-interface-part-2/32/circle-checkmark-512.png';
+                        var imageToRender = (!data.isChecked) ? 'styles/resources/Small-dark-grey-circle.svg.png' : 'styles/resources/circle-checkmark-512.png';
                         $(elem.target).attr('src', imageToRender);
                     },
                     dataType: 'json',
@@ -179,7 +179,7 @@ input[type="text"] {
             var template = '<div class="ui middle aligned divided list">';
             data.reverse().forEach(function (item) {
 
-                var imageToRender = (item.isChecked) ? 'https://cdn1.iconfinder.com/data/icons/web-interface-part-2/32/circle-checkmark-512.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/Small-dark-grey-circle.svg/2000px-Small-dark-grey-circle.svg.png';
+                var imageToRender = (item.isChecked) ? 'styles/resources/circle-checkmark-512.png' : 'styles/resources/Small-dark-grey-circle.svg.png';
                 template += '<div data-id="' + item.id + '" ischecked="' + item.isChecked + '" class="item">' +
                                 '<div class="right floated content">' +
                                     '<div class="ui red button">Remove</div>' + 
